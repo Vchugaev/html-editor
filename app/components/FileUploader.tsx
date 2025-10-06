@@ -126,7 +126,7 @@ export default function FileUploader() {
     return () => iframe.removeEventListener("load", handleLoad);
   }, [iframeUrl]);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const val = e.target.value;
     setTextValue(val);
     if (selectedEl) selectedEl.innerText = val;
