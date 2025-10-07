@@ -1,9 +1,9 @@
-import FileUploader from "./components/FileUploader";
+import HtmlEditor from "./components/HtmlEditor";
 
 export default function Page() {
   return (
     <main>
-      <FileUploader />
+      <HtmlEditor />
     </main>
   );
 }
