@@ -13,11 +13,16 @@
     "@chakra-ui/react": "^2.10.9",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@types/puppeteer": "^7.0.4",
     "framer-motion": "^12.23.22",
     "jszip": "^3.10.1",
     "next": "15.5.4",
+    "playwright": "^1.56.0",
+    "puppeteer": "^24.23.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
