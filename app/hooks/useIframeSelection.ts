@@ -2,11 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AttributeItem, VariableItem } from '../types/editor';
-import {
-  extractVariablesFromHtml,
-  createProtectedHtml,
-  updateVariableValue,
-} from '../utils/variables';
+import { extractVariablesFromHtml } from '../utils/variables';
 
 export function useIframeSelection(
   iframeRef: React.RefObject<HTMLIFrameElement | null>,

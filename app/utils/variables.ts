@@ -55,7 +55,7 @@ export function extractVariableValuesFromScripts(
                   let parsedRoot;
                   try {
                     parsedRoot = JSON.parse(rootValue);
-                  } catch (jsonError) {
+                  } catch {
                     parsedRoot = eval(`(${rootValue})`);
                   }
                   const remainingPath = pathParts.slice(1).join('.');
@@ -67,7 +67,7 @@ export function extractVariableValuesFromScripts(
                     varMatch,
                     extractedValue,
                   );
-                } catch (e) {
+                } catch {
                   // Не удалось обработать
                 }
               }
@@ -95,7 +95,7 @@ export function extractVariableValuesFromScripts(
         // Пытаемся распарсить объект
         const parsedObj = eval(`(${objValue})`);
         valueMap.set(objName, JSON.stringify(parsedObj));
-      } catch (e) {
+      } catch {
         // Если не удалось распарсить, сохраняем как строку
         valueMap.set(objName, objValue);
       }
@@ -113,7 +113,7 @@ export function extractVariableValuesFromScripts(
         // Пытаемся распарсить массив
         const parsedArr = eval(`(${arrValue})`);
         valueMap.set(arrName, JSON.stringify(parsedArr));
-      } catch (e) {
+      } catch {
         // Если не удалось распарсить, сохраняем как строку
         valueMap.set(arrName, arrValue);
       }
@@ -127,14 +127,17 @@ export function extractVariableValuesFromScripts(
  * Извлекает значение по глубокому пути из объекта
  * Например: getValueByPath(data, "items[0].title") или getValueByPath(user, "profile.email")
  */
-export function getValueByPath(obj: any, path: string): string {
+export function getValueByPath(
+  obj: Record<string, unknown>,
+  path: string,
+): string {
   if (!obj || !path) return '';
 
   try {
     // Разбиваем путь на части, учитывая и точки, и скобки
     const parts = path.split(/[\.\[\]]/).filter((part) => part !== '');
 
-    let current = obj;
+    let current: unknown = obj;
     for (const part of parts) {
       if (current === null || current === undefined) return '';
 
@@ -145,15 +148,15 @@ export function getValueByPath(obj: any, path: string): string {
         } else {
           return '';
         }
-      } else if (typeof current === 'object') {
-        current = current[part];
+      } else if (typeof current === 'object' && current !== null) {
+        current = (current as Record<string, unknown>)[part];
       } else {
         return '';
       }
     }
 
     return current !== null && current !== undefined ? String(current) : '';
-  } catch (e) {
+  } catch {
     return '';
   }
 }
@@ -201,7 +204,6 @@ export function extractVariablesFromHtml(html: string): VariableItem[] {
   // Обрабатываем шаблонные строки
   while ((match = templatePattern.exec(html)) !== null) {
     const template = match[1];
-    const scriptTag = match[0];
 
     // Улучшенный паттерн для извлечения переменных из шаблона
     // Поддерживает: ${variable}, ${people[0].name}, ${user.profile.email}, ${data.items[0].title}
@@ -229,14 +231,14 @@ export function extractVariablesFromHtml(html: string): VariableItem[] {
                 let parsedRoot;
                 try {
                   parsedRoot = JSON.parse(rootValue);
-                } catch (jsonError) {
+                } catch {
                   // Если JSON не парсится, пробуем eval
                   parsedRoot = eval(`(${rootValue})`);
                 }
                 // Убираем первый элемент пути, так как мы уже получили корневой объект
                 const remainingPath = pathParts.slice(1).join('.');
                 extractedValue = getValueByPath(parsedRoot, remainingPath);
-              } catch (e) {
+              } catch {
                 // Если не удалось распарсить, используем как строку
                 extractedValue = rootValue;
               }
@@ -246,7 +248,7 @@ export function extractVariablesFromHtml(html: string): VariableItem[] {
               extractedValue = '';
             }
           }
-        } catch (e) {
+        } catch {
           // Если не удалось извлечь значение, оставляем пустым
         }
 
@@ -353,20 +355,17 @@ export function restoreScriptTags(html: string): string {
   // Восстанавливаем простые переменные
   const protectedPattern =
     /<span[^>]*data-variable="(\w+)"[^>]*data-protected="true"[^>]*>([^<]*)<\/span>/gi;
-  let result = html.replace(protectedPattern, (match, variableName, value) => {
+  let result = html.replace(protectedPattern, (match, variableName) => {
     return `<script>document.write(${variableName});</script>`;
   });
 
   // Восстанавливаем шаблонные строки
   const templatePattern =
     /<span[^>]*data-template="true"[^>]*data-original-template="([^"]*)"[^>]*data-protected="true"[^>]*>([^<]*)<\/span>/gi;
-  result = result.replace(
-    templatePattern,
-    (match, originalTemplate, content) => {
-      // Восстанавливаем оригинальный шаблон с переменными в формате ${variable}
-      return `<script>document.write(\`${originalTemplate}\`);</script>`;
-    },
-  );
+  result = result.replace(templatePattern, (match, originalTemplate) => {
+    // Восстанавливаем оригинальный шаблон с переменными в формате ${variable}
+    return `<script>document.write(\`${originalTemplate}\`);</script>`;
+  });
 
   return result;
 }

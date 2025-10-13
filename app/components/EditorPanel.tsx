@@ -23,16 +23,14 @@ import {
   Spinner,
   Alert,
   AlertIcon,
-  AlertTitle,
   AlertDescription,
   Tooltip,
-  Progress,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon, RepeatIcon } from '@chakra-ui/icons';
 import { Fragment, useState } from 'react';
 import { useEffect, useRef } from 'react';
-import { AttributeItem, VariableItem, Language } from '../types/editor';
-import { translateElement, getAvailableLanguages } from '../utils/translation';
+import { AttributeItem, VariableItem } from '../types/editor';
+import { translateElement } from '../utils/translation';
 
 interface EditorPanelProps {
   selectedElement: HTMLElement | null;
@@ -63,7 +61,6 @@ export default function EditorPanel({
   width,
   cssProps,
   onCssChange,
-  iframeRef,
 }: EditorPanelProps) {
   const { colorMode, toggleColorMode } = useColorMode();
   const panelBg = useColorModeValue('white', 'gray.800');
@@ -74,7 +71,6 @@ export default function EditorPanel({
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   // Состояние для перевода
-  const [availableLanguages, setAvailableLanguages] = useState<Language[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
@@ -96,15 +92,7 @@ export default function EditorPanel({
 
   // Загружаем доступные языки
   useEffect(() => {
-    const loadLanguages = async () => {
-      try {
-        const languages = await getAvailableLanguages();
-        setAvailableLanguages(languages);
-      } catch (error) {
-        console.error('Ошибка при загрузке языков:', error);
-      }
-    };
-    loadLanguages();
+    // Загрузка языков больше не нужна, так как setAvailableLanguages удален
   }, []);
 
   // Сохраняем оригинальный текст

@@ -13,11 +13,7 @@ import {
   createProtectedHtml,
   restoreScriptTagsWithValues,
 } from '../utils/variables';
-import {
-  extractAllTexts,
-  saveTextsToJSON,
-  TextNode,
-} from '../utils/textExtractor';
+import { extractAllTexts, saveTextsToJSON } from '../utils/textExtractor';
 
 export default function HtmlEditor() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);

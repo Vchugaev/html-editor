@@ -162,16 +162,11 @@ export function applyTranslationsToIframe(
 
       if (hasOnlyTextNodes) {
         // Если элемент содержит только текст, проверяем его HTML-содержимое
-        const htmlContent = element.outerHTML;
         const textContent = element.textContent?.trim();
 
         if (textContent && translationMap.has(textContent)) {
           const translatedText = translationMap.get(textContent);
           if (translatedText) {
-            // Создаем временный контейнер для парсинга HTML
-            const tempDiv = doc.createElement('div');
-            tempDiv.innerHTML = translatedText;
-
             // Заменяем содержимое элемента
             element.innerHTML = translatedText;
           }
